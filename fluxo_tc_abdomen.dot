@@ -1,0 +1,59 @@
+digraph {
+  /* fluxo_tc_abdomen.dot
+     Um pequeno fluxograma para facilitar a vida de quem fica na Câmara Clara do
+     HDVS orientando TC de Abdômen e Pelve
+
+     ----------------------------------------------------------------------------
+     "THE BEER-WARE LICENSE" (commit 34973274ccef6ab4dfaaf86599792fa9c3fe4689):
+     <pablo@propus.com.br> wrote this file. As long as you retain this notice you
+     can do whatever you want with this stuff. If we meet some day, and you think
+     this stuff is worth it, you can buy me a beer in return Pablo Lorenzzoni
+     ----------------------------------------------------------------------------
+  */
+  label="Fluxo de orientação de exames de TC de Abdomen"
+	
+  /* nodes */
+  start [label="Tomografia de Abdômen"];
+  end [label="Realizar o exame\ncom contraste IV"];
+  without_contrast [shape="diamond", label="Pedido sem contraste?"];
+  according_to_request [label="Realizar o exame\nconforme o pedido"];
+  fill_survey [shape="box", label="Preencher o questionário\nde contraste"];
+  survey_positive [shape="diamond", label="Há algo relevante\nno questionário?"];
+  doctor_intervention_1 [shape="box", label="Buscar orientações\ndo Câmara Clara sobre\nutilização de anti-alérgicos"];
+  entero [shape="diamond", label="é enterotomografia?"];
+  entero_protocol [label="Realizar o exame conforme\nprotocolo específico"];
+  fistula [shape="diamond", label="Tem suspeita de fístula,\ntumor de cólon\nou diverticulite?"];
+  vo_contrast [shape="box", label="Usar contraste VO"];
+  rectal_tumor [shape="diamond", label="é tumor de reto?"];
+  doctor_intervention_2 [shape="box", label="Buscar orientações\ndo Câmara Clara sobre\nutilização de contraste retal"];
+  uro_ct [shape="diamond", label="Pedido de Urotomografia?"];
+  tech_warning [shape="box", label="Avisar o técnico\nde tomografia para\nacrescentar série tardia\nem decúbito ventral"];
+	
+  /* edges */
+  start -> without_contrast;
+  without_contrast -> according_to_request [label="SIM"];
+  without_contrast -> fill_survey [label="NÃO", weight=10];
+  fill_survey -> survey_positive;
+  survey_positive -> doctor_intervention_1 [label="SIM"];
+  survey_positive -> entero [label="NÃO", weight=10];
+  doctor_intervention_1 -> entero;
+  entero -> entero_protocol [label="SIM"];
+  entero -> fistula [label="NÃO", weight=10];
+  fistula -> vo_contrast [label="SIM"];
+  fistula -> rectal_tumor [label="NÃO", weight=10];
+  vo_contrast -> rectal_tumor;
+  rectal_tumor -> doctor_intervention_2 [label="SIM"];
+  rectal_tumor -> uro_ct [label="NÃO", weight=10];
+  doctor_intervention_2 -> uro_ct;
+  uro_ct -> tech_warning [label="SIM"];
+  uro_ct -> end [label="NÃO", weight=10];
+  tech_warning -> end;
+
+  /* ranks */
+  {rank=same; without_contrast according_to_request}
+  {rank=same; survey_positive doctor_intervention_1}
+  {rank=same; entero entero_protocol}
+  {rank=same; fistula vo_contrast}
+  {rank=same; rectal_tumor doctor_intervention_2}
+  {rank=same; uro_ct tech_warning}
+}

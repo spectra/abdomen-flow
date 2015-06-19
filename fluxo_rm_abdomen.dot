@@ -1,0 +1,61 @@
+digraph {
+  /* fluxo_rm_abdomen.dot
+     Um pequeno fluxograma para facilitar a vida de quem fica na Câmara Clara do
+     HDVS orientando Rm de Abdômen/Pelve
+
+     ----------------------------------------------------------------------------
+     "THE BEER-WARE LICENSE" (commit 34973274ccef6ab4dfaaf86599792fa9c3fe4689):
+     <pablo@propus.com.br> wrote this file. As long as you retain this notice you
+     can do whatever you want with this stuff. If we meet some day, and you think
+     this stuff is worth it, you can buy me a beer in return Pablo Lorenzzoni
+     ----------------------------------------------------------------------------
+  */
+  label="Fluxo de orientação de exames de RM de Abdômen"
+	
+  /* nodes */
+  start [label="Ressonância de Abdômen\n(exceto ColangioRM)\n"];
+  end [label="Realizar o exame\ncom contraste IV"];
+  buscopan_allergy [shape="diamond", label="Alérgico a Buscopan?"];
+  cancel_buscopan [shape="box", label="Não usar Buscopan"];
+  use_buscopan [shape="box", label="Usar Buscopan"];
+  without_contrast [shape="diamond", label="Pedido sem contraste?"];
+  according_to_request [label="Realizar o exame\nconforme o pedido"];
+  fill_survey [shape="box", label="Preencher o questionário\nde contraste e\ndispositivos"];
+  survey_positive [shape="diamond", label="Há algo relevante\nno questionário?"];
+  doctor_intervention_1 [shape="box", label="Buscar orientações\ndo Câmara Clara sobre\nutilização de anti-alérgicos\ne dispositivos"];
+  entero [shape="diamond", label="é enteroressonância?"];
+  entero_protocol [label="Realizar o exame conforme\nprotocolo específico"];
+  endometriosis [shape="diamond", label="Tem suspeita\nde endometriose,\nfístula perianal,\ndoença de uretra,\ntumor de colo uterino\nou tumor de reto?"];
+  tech_warning [shape="box", label="Avisar o técnico\nde ressonância para\nacrescentar sequências T2\ncom cortes finos"];
+  uro_rm [shape="diamond", label="Pedido de Uroressonância?"];
+  furosemide [shape="box", label="Usar Furosemida"];
+	  
+  /* edges */
+  start -> buscopan_allergy;
+  buscopan_allergy -> cancel_buscopan [label="SIM"];
+  buscopan_allergy -> use_buscopan [label="NÃO", weight=10];
+  use_buscopan -> without_contrast [weight=10];
+  cancel_buscopan -> without_contrast;
+  without_contrast -> according_to_request [label="SIM"];
+  without_contrast -> fill_survey [label="NÃO", weight=10];
+  fill_survey -> survey_positive;
+  survey_positive -> doctor_intervention_1 [label="SIM"];
+  survey_positive -> entero [label="NÃO", weight=10];
+  doctor_intervention_1 -> entero;
+  entero -> entero_protocol [label="SIM"];
+  entero -> endometriosis [label="NÃO", weight=10];
+  endometriosis -> tech_warning [label="SIM"];
+  endometriosis -> uro_rm [label="NÃO", weight=10];
+  tech_warning -> uro_rm;
+  uro_rm-> furosemide [label="SIM"];
+  uro_rm -> end [label="NÃO", weight=10];
+  furosemide -> end;
+
+  /* ranks */
+  {rank=same; buscopan_allergy cancel_buscopan}
+  {rank=same; without_contrast according_to_request}
+  {rank=same; survey_positive doctor_intervention_1}
+  {rank=same; entero entero_protocol}
+  {rank=same; endometriosis tech_warning}
+  {rank=same; uro_rm furosemide}
+}

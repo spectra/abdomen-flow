@@ -1,0 +1,56 @@
+digraph {
+  /* fluxo_colangiorm_abdomen.dot
+     Um pequeno fluxograma para facilitar a vida de quem fica na Câmara Clara do
+     HDVS orientando ColângioRM
+
+     ----------------------------------------------------------------------------
+     "THE BEER-WARE LICENSE" (commit 34973274ccef6ab4dfaaf86599792fa9c3fe4689):
+     <pablo@propus.com.br> wrote this file. As long as you retain this notice you
+     can do whatever you want with this stuff. If we meet some day, and you think
+     this stuff is worth it, you can buy me a beer in return Pablo Lorenzzoni
+     ----------------------------------------------------------------------------
+  */
+  label="Fluxo de orientação de exames de ColangioRM"
+	
+  /* nodes */
+  start [label="Colangioressonância"];
+  buscopan_allergy [shape="diamond", label="Alérgico a Buscopan?"];
+  cancel_buscopan [shape="box", label="Não usar Buscopan"];
+  use_buscopan [shape="box", label="Usar Buscopan"];
+  with_contrast [shape="diamond", label="Pedido com contraste?"];
+  have_abd_sup [shape="diamond", label="Tem pedido de RM de\nAbdômen Superior?"];
+  follow_abd_sup [shape="box", label="Siga fluxo de\nRM de Abdômen"];
+  ask_for_abd_sup [label="Comunique a enfermeira"];
+  fill_survey [shape="box", label="Preencher o questionário\nde dispositivos"];
+  survey_positive [shape="diamond", label="Há algo relevante\nno questionário?"];
+  doctor_intervention_1 [shape="box", label="Buscar orientações\ndo Câmara Clara sobre\ndispositivos"];
+  anestesia [shape="diamond", label="Tem anestesia?"]
+  end1 [label="Realizar o exame com SUCO"];
+  end2 [label="Realizar o exame sem SUCO"];
+	
+  /* edges */
+  start -> buscopan_allergy;
+  buscopan_allergy -> cancel_buscopan [label="SIM"];
+  buscopan_allergy -> use_buscopan [label="NÃO", weight=10];
+  use_buscopan -> with_contrast [weight=10];
+  cancel_buscopan -> with_contrast;
+  with_contrast -> have_abd_sup [label="SIM", weight=5];
+  with_contrast -> fill_survey [label="NÃO", weight=10];
+  have_abd_sup -> follow_abd_sup [label="SIM"];
+  follow_abd_sup -> anestesia;
+  have_abd_sup -> ask_for_abd_sup [label="NÃO"];
+  fill_survey -> survey_positive [weight=10];
+  survey_positive -> doctor_intervention_1 [label="SIM"];
+  survey_positive -> anestesia [label="NÃO", weight=10];
+  doctor_intervention_1 -> anestesia;
+  anestesia -> end1 [label="NÃO", weight=10];
+  anestesia -> end2 [label="SIM"];
+
+  /* ranks */
+  {rank=same; buscopan_allergy cancel_buscopan}
+  {rank=same; with_contrast have_abd_sup follow_abd_sup}
+  {rank=same; fill_survey ask_for_abd_sup}
+  {rank=same; survey_positive doctor_intervention_1}
+  {rank=same; end1 end2}
+}
+
